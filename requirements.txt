@@ -3,4 +3,3 @@ uvicorn
 joblib
 numpy
 pydantic
-autogluon==0.9.1
