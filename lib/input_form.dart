@@ -23,42 +23,11 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
   final TextEditingController _highCholController = TextEditingController(
     text: "1",
   );
-  final TextEditingController _cholCheckController = TextEditingController(
-    text: "1",
-  );
   final TextEditingController _bmiController = TextEditingController(
     text: "30",
   );
-  final TextEditingController _smokerController = TextEditingController(
-    text: "0",
-  );
-  final TextEditingController _strokeController = TextEditingController(
-    text: "0",
-  );
-  final TextEditingController _heartDiseaseorAttackController =
-      TextEditingController(text: "1");
-  final TextEditingController _physActivityController = TextEditingController(
-    text: "0",
-  );
-  final TextEditingController _fruitsController = TextEditingController(
-    text: "1",
-  );
-  final TextEditingController _veggiesController = TextEditingController(
-    text: "1",
-  );
-  final TextEditingController _hvyAlcoholConsumpController =
-      TextEditingController(text: "0");
-  final TextEditingController _anyHealthcareController = TextEditingController(
-    text: "1",
-  );
-  final TextEditingController _noDocbcCostController = TextEditingController(
-    text: "0",
-  );
   final TextEditingController _genHlthController = TextEditingController(
     text: "5",
-  );
-  final TextEditingController _mentHlthController = TextEditingController(
-    text: "30",
   );
   final TextEditingController _physHlthController = TextEditingController(
     text: "30",
@@ -68,9 +37,6 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
   );
   final TextEditingController _sexController = TextEditingController(text: "0");
   final TextEditingController _ageController = TextEditingController(text: "9");
-  final TextEditingController _educationController = TextEditingController(
-    text: "5",
-  );
   final TextEditingController _incomeController = TextEditingController(
     text: "1",
   );
@@ -85,26 +51,24 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
         final input = DiabetesInput(
           highBP: double.parse(_highBPController.text),
           highChol: double.parse(_highCholController.text),
-          cholCheck: double.parse(_cholCheckController.text),
+          cholCheck: 1.0, // Default
           bmi: double.parse(_bmiController.text),
-          smoker: double.parse(_smokerController.text),
-          stroke: double.parse(_strokeController.text),
-          heartDiseaseorAttack: double.parse(
-            _heartDiseaseorAttackController.text,
-          ),
-          physActivity: double.parse(_physActivityController.text),
-          fruits: double.parse(_fruitsController.text),
-          veggies: double.parse(_veggiesController.text),
-          hvyAlcoholConsump: double.parse(_hvyAlcoholConsumpController.text),
-          anyHealthcare: double.parse(_anyHealthcareController.text),
-          noDocbcCost: double.parse(_noDocbcCostController.text),
+          smoker: 0.0, // Default
+          stroke: 0.0, // Default
+          heartDiseaseorAttack: 0.0, // Default
+          physActivity: 0.0, // Default
+          fruits: 1.0, // Default
+          veggies: 1.0, // Default
+          hvyAlcoholConsump: 0.0, // Default
+          anyHealthcare: 1.0, // Default
+          noDocbcCost: 0.0, // Default
           genHlth: double.parse(_genHlthController.text),
-          mentHlth: double.parse(_mentHlthController.text),
+          mentHlth: 0.0, // Default
           physHlth: double.parse(_physHlthController.text),
           diffWalk: double.parse(_diffWalkController.text),
           sex: double.parse(_sexController.text),
           age: double.parse(_ageController.text),
-          education: double.parse(_educationController.text),
+          education: 5.0, // Default
           income: double.parse(_incomeController.text),
         );
 
@@ -189,69 +153,14 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
                         Icons.water_drop,
                       ),
                       _buildTextField(
-                        "فحص الكوليسترول (0/1)",
-                        _cholCheckController,
-                        Icons.check_circle,
-                      ),
-                      _buildTextField(
                         "مؤشر كتلة الجسم (BMI)",
                         _bmiController,
                         Icons.monitor_weight,
                       ),
                       _buildTextField(
-                        "مدخن (0/1)",
-                        _smokerController,
-                        Icons.smoking_rooms,
-                      ),
-                      _buildTextField(
-                        "سكتة دماغية (0/1)",
-                        _strokeController,
-                        Icons.medical_services,
-                      ),
-                      _buildTextField(
-                        "أمراض القلب (0/1)",
-                        _heartDiseaseorAttackController,
-                        Icons.heart_broken,
-                      ),
-                      _buildTextField(
-                        "نشاط بدني (0/1)",
-                        _physActivityController,
-                        Icons.directions_run,
-                      ),
-                      _buildTextField(
-                        "فواكه (0/1)",
-                        _fruitsController,
-                        Icons.apple,
-                      ),
-                      _buildTextField(
-                        "خضروات (0/1)",
-                        _veggiesController,
-                        Icons.grass,
-                      ),
-                      _buildTextField(
-                        "استهلاك الكحول (0/1)",
-                        _hvyAlcoholConsumpController,
-                        Icons.local_drink,
-                      ),
-                      _buildTextField(
-                        "رعاية صحية (0/1)",
-                        _anyHealthcareController,
-                        Icons.local_hospital,
-                      ),
-                      _buildTextField(
-                        "تكلفة الطبيب (0/1)",
-                        _noDocbcCostController,
-                        Icons.money_off,
-                      ),
-                      _buildTextField(
                         "الصحة العامة (1-5)",
                         _genHlthController,
                         Icons.health_and_safety,
-                      ),
-                      _buildTextField(
-                        "الصحة النفسية (0-30)",
-                        _mentHlthController,
-                        Icons.psychology,
                       ),
                       _buildTextField(
                         "الصحة الجسدية (0-30)",
@@ -272,11 +181,6 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
                         "العمر (1-13)",
                         _ageController,
                         Icons.calendar_today,
-                      ),
-                      _buildTextField(
-                        "التعليم (1-6)",
-                        _educationController,
-                        Icons.school,
                       ),
                       _buildTextField(
                         "الدخل (1-8)",
