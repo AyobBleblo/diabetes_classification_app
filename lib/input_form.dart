@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'diabetes_model.dart';
 import 'api_service.dart';
@@ -115,11 +116,19 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
             MaterialPageRoute(builder: (context) => ResultPage(result: result)),
           );
         }
+      } on SocketException {
+        if (mounted) {
+          _showErrorDialog(
+            "لا يوجد اتصال بالإنترنت",
+            "يرجى التحقق من إعدادات الإنترنت والمحاولة مرة أخرى.",
+          );
+        }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Error: $e")));
+          _showErrorDialog(
+            "حدث خطأ ما",
+            "لم نتمكن من معالجة طلبك. يرجى المحاولة مرة أخرى لاحقاً.\n\nالتفاصيل: $e",
+          );
         }
       } finally {
         if (mounted) {
@@ -131,109 +140,229 @@ class _DiabetesPredictionPageState extends State<DiabetesPredictionPage> {
     }
   }
 
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title, style: const TextStyle(color: Colors.red)),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text("حسناً"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Diabetes Prediction'),
+        title: const Text('توقع السكري'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16.0,
-                  mainAxisSpacing: 16.0,
-                  childAspectRatio: 2.5, // Adjust for height of text fields
-                  children: [
-                    _buildTextField("HighBP (0/1)", _highBPController),
-                    _buildTextField("HighChol (0/1)", _highCholController),
-                    _buildTextField("CholCheck (0/1)", _cholCheckController),
-                    _buildTextField("BMI", _bmiController),
-                    _buildTextField("Smoker (0/1)", _smokerController),
-                    _buildTextField("Stroke (0/1)", _strokeController),
-                    _buildTextField(
-                      "HeartDiseaseorAttack (0/1)",
-                      _heartDiseaseorAttackController,
-                    ),
-                    _buildTextField(
-                      "PhysActivity (0/1)",
-                      _physActivityController,
-                    ),
-                    _buildTextField("Fruits (0/1)", _fruitsController),
-                    _buildTextField("Veggies (0/1)", _veggiesController),
-                    _buildTextField(
-                      "HvyAlcoholConsump (0/1)",
-                      _hvyAlcoholConsumpController,
-                    ),
-                    _buildTextField(
-                      "AnyHealthcare (0/1)",
-                      _anyHealthcareController,
-                    ),
-                    _buildTextField(
-                      "NoDocbcCost (0/1)",
-                      _noDocbcCostController,
-                    ),
-                    _buildTextField("GenHlth (1-5)", _genHlthController),
-                    _buildTextField("MentHlth (0-30)", _mentHlthController),
-                    _buildTextField("PhysHlth (0-30)", _physHlthController),
-                    _buildTextField("DiffWalk (0/1)", _diffWalkController),
-                    _buildTextField("Sex (0/1)", _sexController),
-                    _buildTextField("Age (1-13)", _ageController),
-                    _buildTextField("Education (1-6)", _educationController),
-                    _buildTextField("Income (1-8)", _incomeController),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12.0,
+                    mainAxisSpacing: 12.0,
+                    childAspectRatio: 1.0, // Adjusted for extra text height
+                    children: [
+                      _buildTextField(
+                        "ضغط الدم المرتفع (0/1)",
+                        _highBPController,
+                        Icons.favorite,
+                      ),
+                      _buildTextField(
+                        "الكوليسترول المرتفع (0/1)",
+                        _highCholController,
+                        Icons.water_drop,
+                      ),
+                      _buildTextField(
+                        "فحص الكوليسترول (0/1)",
+                        _cholCheckController,
+                        Icons.check_circle,
+                      ),
+                      _buildTextField(
+                        "مؤشر كتلة الجسم (BMI)",
+                        _bmiController,
+                        Icons.monitor_weight,
+                      ),
+                      _buildTextField(
+                        "مدخن (0/1)",
+                        _smokerController,
+                        Icons.smoking_rooms,
+                      ),
+                      _buildTextField(
+                        "سكتة دماغية (0/1)",
+                        _strokeController,
+                        Icons.medical_services,
+                      ),
+                      _buildTextField(
+                        "أمراض القلب (0/1)",
+                        _heartDiseaseorAttackController,
+                        Icons.heart_broken,
+                      ),
+                      _buildTextField(
+                        "نشاط بدني (0/1)",
+                        _physActivityController,
+                        Icons.directions_run,
+                      ),
+                      _buildTextField(
+                        "فواكه (0/1)",
+                        _fruitsController,
+                        Icons.apple,
+                      ),
+                      _buildTextField(
+                        "خضروات (0/1)",
+                        _veggiesController,
+                        Icons.grass,
+                      ),
+                      _buildTextField(
+                        "استهلاك الكحول (0/1)",
+                        _hvyAlcoholConsumpController,
+                        Icons.local_drink,
+                      ),
+                      _buildTextField(
+                        "رعاية صحية (0/1)",
+                        _anyHealthcareController,
+                        Icons.local_hospital,
+                      ),
+                      _buildTextField(
+                        "تكلفة الطبيب (0/1)",
+                        _noDocbcCostController,
+                        Icons.money_off,
+                      ),
+                      _buildTextField(
+                        "الصحة العامة (1-5)",
+                        _genHlthController,
+                        Icons.health_and_safety,
+                      ),
+                      _buildTextField(
+                        "الصحة النفسية (0-30)",
+                        _mentHlthController,
+                        Icons.psychology,
+                      ),
+                      _buildTextField(
+                        "الصحة الجسدية (0-30)",
+                        _physHlthController,
+                        Icons.sick,
+                      ),
+                      _buildTextField(
+                        "صعوبة المشي (0/1)",
+                        _diffWalkController,
+                        Icons.accessible,
+                      ),
+                      _buildTextField(
+                        "الجنس (0/1)",
+                        _sexController,
+                        Icons.person,
+                      ),
+                      _buildTextField(
+                        "العمر (1-13)",
+                        _ageController,
+                        Icons.calendar_today,
+                      ),
+                      _buildTextField(
+                        "التعليم (1-6)",
+                        _educationController,
+                        Icons.school,
+                      ),
+                      _buildTextField(
+                        "الدخل (1-8)",
+                        _incomeController,
+                        Icons.attach_money,
+                      ),
+                    ],
                   ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Predict', style: TextStyle(fontSize: 18)),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submitForm,
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'توقع النتيجة',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller,
+    IconData icon,
+  ) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Theme.of(context).primaryColor, size: 28),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            TextFormField(
+              controller: controller,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+                isDense: true,
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return '!';
+                }
+                if (double.tryParse(value) == null) {
+                  return '!';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
       ),
-      keyboardType: TextInputType.number,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Required';
-        }
-        if (double.tryParse(value) == null) {
-          return 'Invalid';
-        }
-        return null;
-      },
     );
   }
 }
